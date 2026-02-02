@@ -435,7 +435,19 @@ export class BaileysStartupService extends ChannelStartupService {
       ];
       const shouldReconnect = !codesToNotReconnect.includes(statusCode);
       if (shouldReconnect) {
-        await this.connectToWhatsapp(this.phoneNumber);
+        try {
+          await this.connectToWhatsapp(this.phoneNumber);
+        } catch (error) {
+          this.logger.error(`Error connecting to WhatsApp: ${error}`);
+          setTimeout(async () => {
+            try {
+              this.logger.warn('Retrying connection...');
+              await this.connectToWhatsapp(this.phoneNumber);
+            } catch (retryError) {
+              this.logger.error(`Retry connection failed: ${retryError}`);
+            }
+          }, 5000);
+        }
       } else {
         this.sendDataWebhook(Events.STATUS_INSTANCE, {
           instance: this.instance.name,
@@ -1966,7 +1978,7 @@ export class BaileysStartupService extends ChannelStartupService {
             }
 
             if (events['connection.update']) {
-              this.connectionUpdate(events['connection.update']);
+              await this.connectionUpdate(events['connection.update']);
             }
 
             if (events['creds.update']) {
