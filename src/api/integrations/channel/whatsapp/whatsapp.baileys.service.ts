@@ -430,8 +430,8 @@ export class BaileysStartupService extends ChannelStartupService {
         DisconnectReason.loggedOut,
         DisconnectReason.forbidden,
         DisconnectReason.connectionReplaced,
-        402,
-        406,
+        DisconnectReason.spanBlocked,
+        DisconnectReason.notAcceptable,
       ];
       const shouldReconnect = !codesToNotReconnect.includes(statusCode);
       if (shouldReconnect) {
@@ -623,7 +623,7 @@ export class BaileysStartupService extends ChannelStartupService {
     this.isReconnecting = true;
 
     try {
-      // DEFENSIVE CLEANUP: Close previous socket before creating new one
+      // Close previous socket before creating new one
       // This prevents WebSocket leaks when reloadConnection() is called
       await this.cleanupClient();
 
