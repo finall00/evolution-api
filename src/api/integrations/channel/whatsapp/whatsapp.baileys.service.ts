@@ -477,7 +477,7 @@ export class BaileysStartupService extends ChannelStartupService {
 
         this.eventEmitter.emit('logout.instance', this.instance.name, 'inner');
         this.client?.ws?.close();
-        this.client.end(new Error('Close connection'));
+        this.client?.end(new Error('Close connection'));
 
         this.sendDataWebhook(Events.CONNECTION_UPDATE, { instance: this.instance.name, ...this.stateConnection });
       }
